@@ -339,6 +339,8 @@ style = "dimmed green"
 | `fish_style_pwd_dir_length` | `0`    | 使用 fish shell 当前目录路径逻辑时每个省略目录名使用的字符数。 |
 | `use_logical_path`          | `true` | 显示由 shell 提供的逻辑路径（`PWD`）而不是 OS 提供的路径。 |
 
+`fish_style_pwd_dir_length` interacts with the standard truncation options in a way that can be surprising at first: if it's non-zero, the components of the path that would normally be truncated are instead displayed with that many characters. For example, the path `/built/this/city/on/rock/and/roll`, which would normally be displayed as as `rock/and/roll`, would be displayed as `/b/t/c/o/rock/and/roll` with `fish_style_pwd_dir_length = 1`--the path components that would normally be removed are displayed with a single character. For `fish_style_pwd_dir_length = 2`, it would be `/bu/th/ci/on/rock/and/roll`.
+
 </details>
 
 ### 示例
@@ -352,11 +354,11 @@ truncation_length = 8
 
 ## Dotnet
 
-`dotnet` 模块显示与当前目录下使用的 .NET Core SDK 相关联的版本。 如果当前目录已被绑定了一个版本的 SDK，则显示被帮定的版本。 否则此组件将显示最新安装的 SDK 版本。
+The `dotnet` module shows the relevant version of the .NET Core SDK for the current directory. If the SDK has been pinned in the current directory, the pinned version is shown. Otherwise the module shows the latest installed version of the SDK.
 
-此组件只会在以下文件之一出现在当前目录中时显示：`global.json`，`project.json`，`*.sln`，`*.csproj`，`*.fsproj`，`*.xproj`。 为了正确使用此组件，您还需要安装 .NET Core 命令行工具。
+This module will only be shown in your prompt when one of the following files are present in the current directory: `global.json`, `project.json`, `*.sln`, `*.csproj`, `*.fsproj`, `*.xproj`. You'll also need the .NET Core command-line tools installed in order to use it correctly.
 
-在内部，此组件使用自己的版本检测机制。 一般来说此组件是直接执行 `dotnet --version` 的两倍快，但当你的 .NET 项目使用了不常见的目录布局时此组件可能显示一个错误的版本。 如果相比于速度您更需要正确的版本号，您可以在组件设置中设置 `heuristic = false` 来禁用该机制。
+Internally, this module uses its own mechanism for version detection. Typically it is twice as fast as running `dotnet --version`, but it may show an incorrect version if your .NET project has an unusual directory layout. If accuracy is more important than speed, you can disable the mechanism by setting `heuristic = false` in the module options.
 
 ### 配置项
 
@@ -407,7 +409,7 @@ symbol = " "
 
 ## Environment Variable
 
-`env_var` 组件显示选定的环境变量的当前值。 此组件只有满足以下条件之一时才会被显示：
+The `env_var` module displays the current value of a selected environment variable. The module will be shown only if any of the following conditions are met:
 
 - 设置的 `variable` 是一个已存在的环境变量
 - 未定义 `variable`，但定义了 `default`
@@ -436,7 +438,7 @@ default = "unknown shell"
 
 ## Git Branch
 
-`git_branch` 组件显示当前目录的 git 仓库的活动分支。
+The `git_branch` module shows the active branch of the repo in your current directory.
 
 ### 配置项
 
@@ -461,23 +463,18 @@ truncation_symbol = ""
 
 ## Git Commit
 
-`git_commit` 组件显示当前目录的 git 仓库的当前提交的哈希值。
-
-::: tip
-
-此组件默认被禁用。 若要启用此组件，请在配置文件中设置 `disable` 字段为 `false`。
-
-:::
+The `git_commit` module shows the current commit hash of the repo in your current directory.
 
 ### 配置项
 
-| 字段                   | 默认值            | 描述                   |
-| -------------------- | -------------- | -------------------- |
-| `commit_hash_length` | `7`            | 显示的 git 提交哈希值的长度。    |
-| `prefix`             | `"("`          | 直接在 git 提交哈希值前显示的前缀。 |
-| `suffix`             | `")"`          | 直接在 git 提交哈希值后显示的后缀。 |
-| `style`              | `"bold green"` | 此组件的样式。              |
-| `disabled`           | `true`         | 禁用 `git_commit` 组件。  |
+| 字段                   | 默认值            | 描述                                                    |
+| -------------------- | -------------- | ----------------------------------------------------- |
+| `commit_hash_length` | `7`            | 显示的 git 提交哈希值的长度。                                     |
+| `prefix`             | `"("`          | 直接在 git 提交哈希值前显示的前缀。                                  |
+| `suffix`             | `")"`          | 直接在 git 提交哈希值后显示的后缀。                                  |
+| `style`              | `"bold green"` | 此组件的样式。                                               |
+| `only_detached`      | `true`         | Only show git commit hash when in detached HEAD state |
+| `disabled`           | `false`        | Disables the `git_commit` module.                     |
 
 ### 示例
 
@@ -485,13 +482,12 @@ truncation_symbol = ""
 # ~/.config/starship.toml
 
 [git_commit]
-disabled = false
 commit_hash_length = 4
 ```
 
 ## Git State
 
-`git_state` 组件会显示当前目录在哪个 git 仓库中，以及正在进行的操作，例如：_REBASING_，_BISECTING_ 等。 进度信息（例如 REBASING 3/10）如果存在则也会被显示。
+The `git_state` module will show in directories which are part of a git repository, and where there is an operation in progress, such as: _REBASING_, _BISECTING_, etc. If there is progress information (e.g., REBASING 3/10), that information will be shown too.
 
 ### 配置项
 
@@ -520,7 +516,7 @@ cherry_pick = "🍒 PICKING"
 
 ## Git Status
 
-`git_status`组件通过相应的符号显示您当前目录中 git 仓库的状态。
+The `git_status` module shows symbols representing the state of the repo in your current directory.
 
 ### 配置项
 
@@ -579,7 +575,7 @@ deleted = "🗑"
 
 ## Golang
 
-`golang` 组件显示当前安装的 Golang 版本。 此组件只有满足以下条件之一时才会被显示：
+The `golang` module shows the currently installed version of Golang. 此组件只有满足以下条件之一时才会被显示：
 
 - 当前目录包含 `go.mod` 文件
 - 当前目录包含 `go.sum` 文件
@@ -607,7 +603,7 @@ symbol = "🏎💨 "
 ```
 ## Haskell
 
-`haskell` 组件显示当前安装的 Haskell Stack 版本。 此组件只有满足以下条件之一时才会被显示：
+The `haskell` module shows the currently installed version of Haskell Stack version. 此组件只有满足以下条件之一时才会被显示：
 
 - 当前目录包含 `stack.yaml` 文件
 
@@ -631,7 +627,7 @@ symbol = " "
 
 ## Mercurial Branch
 
-`hg_branch` 组件显示当前目录的 hg 仓库的活动分支。
+The `hg_branch` module shows the active branch of the repo in your current directory.
 
 ### 配置项
 
@@ -656,7 +652,7 @@ truncation_symbol = ""
 
 ## Hostname
 
-`hostname` 组件显示系统主机名。
+The `hostname` module shows the system hostname.
 
 ### 配置项
 
@@ -684,7 +680,7 @@ disabled = false
 
 ## Jobs
 
-`jobs` 组件显示当前正在运行的任务数量。 仅当有后台任务运行时，此组件才会显示。 如果有超过 1 个作业，模块将显示正在运行的作业数量，如果配置了 `threshold` 字段，则使用它作为显示作业数量的下限。
+The `jobs` module shows the current number of jobs running. The module will be shown only if there are background jobs running. The module will show the number of jobs running if there is more than 1 job, or more than the `threshold` config value, if it exists.
 
 ### 配置项
 
@@ -707,11 +703,11 @@ threshold = 4
 
 ## Kubernetes
 
-显示当前的 Kubernetes 上下文名以及，如果有相关设置，则显示来自 kubeconig 文件的命名空间。 命名空间需要在 kubeconfig 文件中设置，这可以通过 `kubectl config set-context starship-cluster --namespace astronaut` 完成。 如果设置了环境变量 `$KUBECONFIG`，此组件将使用该值，否则会使用 `~/.kube/config`。
+Displays the current Kubernetes context name and, if set, the namespace from the kubeconfig file. The namespace needs to be set in the kubeconfig file, this can be done via `kubectl config set-context starship-cluster --namespace astronaut`. If the `$KUBECONFIG` env var is set the module will use that if not it will use the `~/.kube/config`.
 
 ::: tip
 
-此组件默认被禁用。 若要启用此组件，请在配置文件中设置 `disable` 字段为 `false`。
+This module is disabled by default. To enable it, set `disabled` to `false` in your configuration file.
 
 :::
 
@@ -730,13 +726,13 @@ threshold = 4
 
 [kubernetes]
 symbol = "⛵ "
-style = "dim green"
+style = "dimmed green"
 disabled = false
 ```
 
 ## Line Break
 
-`line_break` 组件将提示分隔为两行。
+The `line_break` module separates the prompt into two lines.
 
 ### 配置项
 
@@ -755,7 +751,7 @@ disabled = true
 
 ## Nix-shell
 
-`nix_shell` 组件显示 nix-shell 环境。 当处于一个 nix-shell 环境中时，此组件会被显示。
+The `nix_shell` module shows the nix-shell environment. The module will be shown when inside a nix-shell environment.
 
 ### 配置项
 
@@ -781,7 +777,7 @@ pure_msg = "pure shell"
 
 ## Java
 
-`java` 组件显示当前安装的 Java 版本。 此组件只有满足以下条件之一时才会被显示：
+The `java` module shows the currently installed version of Java. 此组件只有满足以下条件之一时才会被显示：
 
 - 当前目录包含 `pom.xml`，`build.gradle.kts` 或 `build.sbt` 文件
 - 当前目录包含一个扩展名为 `.java`，`.class`，`.gradle` 或 `.jar` 的文件
@@ -805,13 +801,13 @@ symbol = "🌟 "
 
 ## Memory Usage
 
-`memory_usage` 组件显示当前系统内存和交换区使用情况。
+The `memory_usage` module shows current system memory and swap usage.
 
-默认情况下，如果系统交换区使用不为 0，则会显示交换区使用情况。
+By default the swap usage is displayed if the total system swap is non-zero.
 
 ::: tip
 
-此组件默认被禁用。 若要启用此组件，请在配置文件中设置 `disable` 字段为 `false`。
+This module is disabled by default. To enable it, set `disabled` to `false` in your configuration file.
 
 :::
 
@@ -868,7 +864,7 @@ style = "bold blue"
 
 ## NodeJS
 
-`nodejs` 组件显示当前安装的 NodeJS 版本。 此组件将在符合以下任意条件之一时显示：
+The `nodejs` module shows the currently installed version of NodeJS. 此组件只有满足以下条件之一时才会被显示：
 
 - 当前目录包含 `package.json` 文件
 - 当前目录包含 `node_modules` 目录
@@ -893,12 +889,13 @@ symbol = "🤖 "
 
 ## Package Version
 
-当前目录是软件包的代码仓库时，将显示 `package` 组件，并显示软件包当前版本。 此组件目前支持`npm`，`cargo` 和 `poetry` 软件包。
+The `package` module is shown when the current directory is the repository for a package, and shows its current version. The module currently supports `npm`, `cargo`, `poetry`, `composer`, and `gradle` packages.
 
 - **npm** —— `npm` 软件包版本从当前目录下的 `package.json` 中得到
 - **cargo** —— `cargo` 软件包的版本从当前目录下的 `Cargo.toml` 中得到
 - **poetry** —— `poetry` 软件包版本从当前目录下的 `pyproject.toml` 中得到
 - **composer** —— `composer` 软件包版本从当前目录下的 `composer.json` 中得到
+- **gradle** – The `gradle` package version is extracted from the `build.gradle` present
 
 > ⚠ 此组件显示的是源代码在当前目录中的软件包的版本，而不是包管理器的版本。
 
@@ -921,7 +918,7 @@ symbol = "🎁 "
 
 ## PHP
 
-`php` 组件显示当前安装的 PHP 版本。 此组件只有满足以下条件之一时才会被显示：
+The `php` module shows the currently installed version of PHP. 此组件只有满足以下条件之一时才会被显示：
 
 - 当前目录包含一个 `composer.json` 文件
 - 当前目录包含一个 `.php` 文件
@@ -945,11 +942,11 @@ symbol = "🔹 "
 
 ## Python
 
-`python` 组件显示当前安装的 Python 版本。
+The `python` module shows the currently installed version of Python.
 
-如果 `pyenv_version_name` 设置为 `true`，则将显示 pyenv 版本名称。
+If `pyenv_version_name` is set to `true`, it will display the pyenv version name.
 
-否则，它将显示来自 `python --version` 的版本号，并显示当前的 Python 虚拟环境，如果激活了的话。
+Otherwise, it will display the version number from `python --version` and show the current Python virtual environment if one is activated.
 
 此组件只有满足以下条件之一时才会被显示：
 
@@ -984,7 +981,7 @@ pyenv_prefix = "foo "
 
 ## Ruby
 
-`ruby` 组件显示当前安装的 Ruby 版本。 此组件只有满足以下条件之一时才会被显示：
+The `ruby` module shows the currently installed version of Ruby. 此组件只有满足以下条件之一时才会被显示：
 
 - 当前目录包含 `Gemfile` 文件
 - 当前目录包含 `.rb` 文件
@@ -1008,7 +1005,7 @@ symbol = "🔺 "
 
 ## Rust
 
-`rust` 组件显示当前安装的 Rust 版本。 此组件只有满足以下条件之一时才会被显示：
+The `rust` module shows the currently installed version of Rust. 此组件只有满足以下条件之一时才会被显示：
 
 - 当前目录包含 `Cargo.toml` 文件
 - 当前目录包含一个使用 `.rs` 扩展名的文件
@@ -1032,7 +1029,7 @@ symbol = "⚙️ "
 
 ## Terraform
 
-`terraform` 组件显示当前选定的 terraform 工作区和版本。 默认情况下不会显示 terraform 版本，因为当使用大量插件时，当前版本 terraform 查询版本号很慢。 此组件只有满足以下条件之一时才会被显示：
+The `terraform` module shows the currently selected terraform workspace and version. By default the terraform version is not shown, since this is slow on current versions of terraform when a lot of plugins are in use. 此组件只有满足以下条件之一时才会被显示：
 
 - 当前目录包含 `.terraform` 目录
 - 当前目录包含一个使用 `.tf` 扩展名的文件
@@ -1057,11 +1054,11 @@ symbol = "🏎💨 "
 
 ## Time
 
-`time` 组件显示当前的 **本地** 时间。 `format` 字段值会提供给 [`chrono`](https://crates.io/crates/chrono) crate 用来控制时间显示方式。 请参阅 [chrono strftime 文档](https://docs.rs/chrono/0.4.7/chrono/format/strftime/index.html) 以了解可用格式选项。
+The `time` module shows the current **local** time. The `format` configuration value is used by the [`chrono`](https://crates.io/crates/chrono) crate to control how the time is displayed. Take a look [at the chrono strftime docs](https://docs.rs/chrono/0.4.7/chrono/format/strftime/index.html) to see what options are available.
 
 ::: tip
 
-此组件默认被禁用。 若要启用此组件，请在配置文件中设置 `disable` 字段为 `false`。
+This module is disabled by default. To enable it, set `disabled` to `false` in your configuration file.
 
 :::
 
@@ -1075,7 +1072,7 @@ symbol = "🏎💨 "
 | `utc_time_offset` | `local`       | 设置所用 UTC 偏移量。 范围是 -24 < x < 24。 允许使用浮点数来得到 30/45 分钟的时区偏移。                                 |
 | `disabled`        | `true`        | 禁用 `time` 组件。                                                                             |
 
-如果 `use_12hr` 为 `true`，则`format` 默认值为 `"%r"`。 否则，其默认值为 `"%T"`。 手动设置 `format` 将使 `use_12hr` 被忽略。
+If `use_12hr` is `true`, then `format` defaults to `"%r"`. Otherwise, it defaults to `"%T"`. Manually setting `format` will override the `use_12hr` setting.
 
 ### 示例
 
@@ -1090,7 +1087,7 @@ utc_time_offset = -5
 
 ## Username
 
-`username` 组件显示当前活跃的用户名。 此组件只有满足以下条件之一时才会被显示：
+The `username` module shows active user's username. 此组件只有满足以下条件之一时才会被显示：
 
 - 当前用户是 root
 - 当前用户与登录用户不相同
